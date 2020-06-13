@@ -1,5 +1,4 @@
 import express from "express";
-import bodyParser from "body-parser";
 import { readdir, statSync } from "fs";
 import path from "path";
 const resolve = path.resolve;

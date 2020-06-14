@@ -1,26 +1,15 @@
 import express from "express";
-import { readdir, statSync } from "fs";
-import path from "path";
-const resolve = path.resolve;
+import { readFolder } from "./utils";
 const router = express.Router();
 router.get("/", (req, res) => {
     const path = req.query.path as string || "./";
-    console.log(path);
-    readdir(path, (err, data) => {
-        const result = data.map((name) => {
-            try {
-                const stat = statSync(resolve(path, name));
-                const { size } = stat;
-                const isFile = stat.isFile();
-                return { name, size, isFile, ok: true }
-            } catch (error) {
-                return { name, ok: false, error }
-            }
-
-        });
+    // 获取指定目录下的文件
+    readFolder(path).then((result) => {
         const dirs = result.filter(item => !item.isFile);
         const files = result.filter(item => item.isFile);
-        res.json({ data: [...dirs, ...files] });
+        res.json({ code: 1, content: [...dirs, ...files] });
+    }).catch((err) => {
+        res.json({ code: 0, err });
     });
 });
 export default router;

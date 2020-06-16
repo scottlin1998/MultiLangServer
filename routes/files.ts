@@ -3,13 +3,16 @@ import { readFolder } from "./utils";
 const router = express.Router();
 router.get("/", (req, res) => {
     const path = req.query.path as string || "./";
+    const filter: string = req.query.filter as string || ".*";
+    // const filterExp = new RegExp(filter);
     // 获取指定目录下的文件
-    readFolder(path).then((result) => {
-        const dirs = result.filter(item => !item.isFile);
+    readFolder(path, new RegExp(filter)).then((result) => {
+        const dirs = result.filter(item => item.isDirectory);
         const files = result.filter(item => item.isFile);
-        res.json({ code: 1, content: [...dirs, ...files] });
-    }).catch((err) => {
-        res.json({ code: 0, err });
+        console.log(files,result);
+        res.json([...dirs, ...files]);
+    }).catch((error) => {
+        res.json(error);
     });
 });
 export default router;
